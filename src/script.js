@@ -4,7 +4,24 @@ import Stats from 'three/examples/jsm/libs/stats.module.js';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import cameraModel from './models/camera/camera.fbx';
+
+import cameraDiffuse from './models/camera/textures/Camera_01_8-bit_Diffuse.png'
+import cameraMetallic from './models/camera/textures/Camera_01_8-bit_Metallic.png'
+import cameraNormal from './models/camera/textures/Camera_01_8-bit_Normal.png'
+import cameraRoughness from './models/camera/textures/Camera_01_8-bit_Roughness.png'
+
+import lensDiffuse from './models/camera/textures/Camera_01_Lens_8-bit_Diffuse.png'
+import lensMetallic from './models/camera/textures/Camera_01_Lens_8-bit_Metallic.png'
+import lensNormal from './models/camera/textures/Camera_01_Lens_8-bit_Normal.png'
+import lensRoughness from './models/camera/textures/Camera_01_Lens_8-bit_Roughness.png'
+
+import strapDiffuse from './models/camera/textures/Camera_01_StrapCover_8-bit_Diffuse.png'
+import strapMetallic from './models/camera/textures/Camera_01_StrapCover_8-bit_Metallic.png'
+import strapNormal from './models/camera/textures/Camera_01_StrapCover_8-bit_Normal.png'
+import strapRoughness from './models/camera/textures/Camera_01_StrapCover_8-bit_Roughness.png'
+
 import * as dat from 'dat.gui'
+import { MeshStandardMaterial } from 'three';
 
 // Debug
 const gui = new dat.GUI()
@@ -16,10 +33,13 @@ const canvas = document.querySelector('canvas#watch-canvas');
 const scene = new THREE.Scene();
 
 // Model
-const loader = new FBXLoader();
+const fbx_loader = new FBXLoader();
+const texture_loader = new THREE.TextureLoader();
 let model = null;
 
-loader.load( cameraModel, function ( object ) {
+let mesh = null;
+
+fbx_loader.load( cameraModel, function ( object ) {
 
   object.traverse( function ( child ) {
 
@@ -27,14 +47,17 @@ loader.load( cameraModel, function ( object ) {
 
       child.castShadow = true;
       child.receiveShadow = true;
-
+      // child.material = new MeshStandardMaterial({
+      //   metalnessMap: texture_loader.load(cameraMetallic),
+      //   map: texture_loader.load(cameraDiffuse),
+      //   normalMap: texture_loader.load(cameraNormal),
+      //   roughnessMap: texture_loader.load(cameraRoughness)
+      // });
     }
-
   } );
 
   model = object;
-  scene.add( model );
-
+  scene.add(model);
 } );
 
 // Lights
@@ -82,7 +105,8 @@ scene.add(camera)
  * Renderer
  */
  const renderer = new THREE.WebGLRenderer({
-  canvas: canvas
+  canvas: canvas,
+  alpha: true
 })
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))

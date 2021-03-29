@@ -4,11 +4,10 @@
     padding: 0;
 }
 
-
 section{
   height: 100vh;
 }
 
 .rotating-watch{
-  background-color: black;
+  background-color: rgb(24,24,24);
 }
