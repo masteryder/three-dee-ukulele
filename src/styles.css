@@ -1,0 +1,14 @@
+*
+{
+    margin: 0;
+    padding: 0;
+}
+
+
+section{
+  height: 100vh;
+}
+
+.rotating-watch{
+  background-color: black;
+}
