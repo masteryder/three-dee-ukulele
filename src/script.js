@@ -3,22 +3,15 @@ import * as THREE from 'three';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-import cameraModel from './models/camera/camera.fbx';
 
-import cameraDiffuse from './models/camera/textures/Camera_01_8-bit_Diffuse.png'
-import cameraMetallic from './models/camera/textures/Camera_01_8-bit_Metallic.png'
-import cameraNormal from './models/camera/textures/Camera_01_8-bit_Normal.png'
-import cameraRoughness from './models/camera/textures/Camera_01_8-bit_Roughness.png'
+import ukuleleModel from './models/ukulele/ukulele.fbx';
 
-import lensDiffuse from './models/camera/textures/Camera_01_Lens_8-bit_Diffuse.png'
-import lensMetallic from './models/camera/textures/Camera_01_Lens_8-bit_Metallic.png'
-import lensNormal from './models/camera/textures/Camera_01_Lens_8-bit_Normal.png'
-import lensRoughness from './models/camera/textures/Camera_01_Lens_8-bit_Roughness.png'
+import uDiffuse from './models/ukulele/textures/Ukulele_01_8-bit_Diffuse.png'
+import uMetallic from './models/ukulele/textures/Ukulele_01_16-bit_Metallic.png'
+import uNormal from './models/ukulele/textures/Ukulele_01_8-bit_Normal.png'
+import uRoughness from './models/ukulele/textures/Ukulele_01_16-bit_Roughness.png'
+import uHeight from './models/ukulele/textures/Ukulele_01_16-bit_Height.png'
 
-import strapDiffuse from './models/camera/textures/Camera_01_StrapCover_8-bit_Diffuse.png'
-import strapMetallic from './models/camera/textures/Camera_01_StrapCover_8-bit_Metallic.png'
-import strapNormal from './models/camera/textures/Camera_01_StrapCover_8-bit_Normal.png'
-import strapRoughness from './models/camera/textures/Camera_01_StrapCover_8-bit_Roughness.png'
 
 import * as dat from 'dat.gui'
 import { MeshStandardMaterial } from 'three';
@@ -39,34 +32,90 @@ let model = null;
 
 let mesh = null;
 
-fbx_loader.load( cameraModel, function ( object ) {
+fbx_loader.load( ukuleleModel, function ( object ) {
 
   object.traverse( function ( child ) {
 
     if ( child.isMesh ) {
-
       child.castShadow = true;
       child.receiveShadow = true;
-      // child.material = new MeshStandardMaterial({
-      //   metalnessMap: texture_loader.load(cameraMetallic),
-      //   map: texture_loader.load(cameraDiffuse),
-      //   normalMap: texture_loader.load(cameraNormal),
-      //   roughnessMap: texture_loader.load(cameraRoughness)
-      // });
-    }
-  } );
 
+      let ukuleleMaterial = new MeshStandardMaterial({
+        metalnessMap: texture_loader.load(uMetallic),
+        map: texture_loader.load(uDiffuse),
+        normalMap: texture_loader.load(uNormal),
+        roughnessMap: texture_loader.load(uRoughness),
+      });
+      child.material = ukuleleMaterial;
+      child.depthWrite = false;
+    }
+  });
   model = object;
   scene.add(model);
 } );
 
 // Lights
 
-const pointLight = new THREE.PointLight(0xffffff, 0.1)
-pointLight.position.x = 2
-pointLight.position.y = 3
-pointLight.position.z = 4
+const light1Color = {
+  color: 0xffffff
+}
+
+const pointLight = new THREE.PointLight(light1Color.color, .5)
+pointLight.position.x = 0
+pointLight.position.y = 100
+pointLight.position.z = 300
 scene.add(pointLight)
+
+
+
+const light1folder = gui.addFolder('Light 1');
+light1folder.addColor(light1Color, 'color').onChange(()=>{
+  pointLight.color.set(light1Color.color);
+})
+light1folder.add(pointLight.position, 'x')
+light1folder.add(pointLight.position, 'y')
+light1folder.add(pointLight.position, 'z')
+light1folder.add(pointLight, 'intensity')
+
+
+const light2Color = {
+  color: 0x550e0e
+}
+
+const pointLight2 = new THREE.PointLight(light2Color.color,  .5)
+pointLight2.position.x = 400
+pointLight2.position.y = -1000
+pointLight2.position.z = 0
+scene.add(pointLight2)
+
+const light2folder = gui.addFolder('Light 2');
+light2folder.addColor(light2Color, 'color').onChange(()=>{
+  pointLight2.color.set(light2Color.color)
+})
+light2folder.add(pointLight2.position, 'x')
+light2folder.add(pointLight2.position, 'y')
+light2folder.add(pointLight2.position, 'z')
+light2folder.add(pointLight2, 'intensity')
+
+
+const light3Color = {
+  color: 0x2553b1
+}
+const pointLight3 = new THREE.PointLight(light3Color.color, 1)
+pointLight3.position.x = 0
+pointLight3.position.y = -400
+pointLight3.position.z = 1000
+scene.add(pointLight3)
+
+const light3folder = gui.addFolder('Light 3');
+light3folder.addColor(light3Color, 'color').onChange(()=>{
+  pointLight3.color.set(light3Color.color)
+})
+light3folder.add(pointLight3.position, 'x')
+light3folder.add(pointLight3.position, 'y')
+light3folder.add(pointLight3.position, 'z')
+light3folder.add(pointLight3, 'intensity')
+
 
 /**
  * Sizes
@@ -95,10 +144,12 @@ window.addEventListener('resize', () =>
  * Camera
  */
 // Base camera
-const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
-camera.position.x = 0
-camera.position.y = 0
-camera.position.z = 2
+const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 10000)
+camera.position.set(0,350, 500)
+gui.add(camera.position, 'x')
+gui.add(camera.position, 'y')
+gui.add(camera.position, 'z')
+
 scene.add(camera)
 
 /**
